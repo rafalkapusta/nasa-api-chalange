@@ -1,5 +1,9 @@
-Simple NASA Api images search. 
+NASA Api images search. 
+Fully responsive.
 
-Backgroung image is a random picture from NASA Api.  
+On load page fetch random picture from NASA Api.
+In desktop layout shows picture explanation. 
+In mobile layout only picture title is shown.
 
-Developed to practice using fetch() method. 
+After searching for pictures load more and back to the top buttons are displayed.
+  

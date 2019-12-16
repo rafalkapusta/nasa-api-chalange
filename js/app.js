@@ -1,5 +1,8 @@
 let formInput = document.querySelector('#form-search-input');
 let content = document.querySelector('.content');
+let background = document.querySelector('.background');
+let explanation = document.querySelector('.explanation');
+let pictureTitle = document.querySelector('.title');
 let formButton = document.querySelector('#form-search-btn');
 let loadMoreButton = document.querySelector('#form-loadMore-btn');
 let formScrollButton = document.querySelector('#form-loadMore-scroll');
@@ -8,21 +11,22 @@ let nasaUrl = new URL('https://images-api.nasa.gov/search');
 let pictureOfTheDayUrl = new URL ('https://api.nasa.gov/planetary/apod');
 let apiKey = `hb1JysnbGsfK6GI9NK8VbbGHMgTNmNdd5RSLDhct`;
 
+
+loadMoreButton.style.visibility = 'hidden';
+formScrollButton.style.visibility = 'hidden';
+
 function loadPictureOfTheDay() {
     let params = {date: getRandomDate(), api_key: apiKey};
     Object.keys(params).forEach(key => pictureOfTheDayUrl.searchParams.append(key, params[key]));
     fetch(pictureOfTheDayUrl)
         .then(response => response.json())
         .then(json => {
-            if(json.msg === "day is out of range for month") {
-                loadPictureOfTheDay();
-            }
-            //console.log(json);
             let hdUrl = json.hdurl;
-            content.style.backgroundImage = `url(${hdUrl})`;
-            content.innerText = json.explanation;
+            background.style.backgroundImage = `url(${hdUrl})`;
+            explanation.innerText = json.explanation;
+            pictureTitle.innerText = json.title;
         })
-        .catch(error => console.log(error));
+        .catch(() => loadPictureOfTheDay());
 }
 
 loadPictureOfTheDay();
@@ -41,7 +45,9 @@ Object.keys(params).forEach(key => nasaUrl.searchParams.append(key, params[key])
 fetch(nasaUrl)
     .then(response => response.json())
     .then(json => {
-        console.log(json);
+        //console.log(json);
+        loadMoreButton.style.visibility = 'visible';
+        formScrollButton.style.visibility = 'visible';
         if(counter === 0) {
             while (content.firstChild) {
                     content.removeChild(content.firstChild);
