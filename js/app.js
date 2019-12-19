@@ -6,6 +6,7 @@ let pictureTitle = document.querySelector('.title');
 let formButton = document.querySelector('#form-search-btn');
 let loadMoreButton = document.querySelector('#form-loadMore-btn');
 let formScrollButton = document.querySelector('#form-loadMore-scroll');
+const lightBox = document.querySelector('.lightBox');
 
 let nasaUrl = new URL('https://images-api.nasa.gov/search');
 let pictureOfTheDayUrl = new URL ('https://api.nasa.gov/planetary/apod');
@@ -77,15 +78,29 @@ function insertPicture(picturesArr, start, end) {
             pictureDiv.id = index;
             pictureParagraph.innerText = `${picture.data[0].title}`;
             pictureContainer.classList.add('pictureContainer');
-            //content.appendChild(pictureDiv);
-            //content.appendChild(pictureParagraph)
             pictureContainer.appendChild(pictureDiv);
             pictureContainer.appendChild(pictureParagraph);
             content.appendChild(pictureContainer);
-            //console.log(pictureDiv);
+            const allPictures = document.querySelectorAll('.picture');
+            pictureContainer.addEventListener('click', e => {
+                if(e.target.className === 'picture' ) {
+                    lightBox.classList.add('active');
+                    const lightBoxPicture = e.target.cloneNode(false);
+                    while(lightBox.firstChild) {
+                        lightBox.removeChild(lightBox.firstChild)
+                    }
+                    lightBox.appendChild(lightBoxPicture);
+                }
+            })
         }
     })
 }
+
+lightBox.addEventListener('click', e => {
+    if(e.target === e.currentTarget) {
+        lightBox.classList.remove('active');
+    }
+});
 
 function filterImges(array) {
     return array.filter(elem => elem.data[0].media_type === 'image')
