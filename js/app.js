@@ -73,7 +73,11 @@ function insertPicture(picturesArr, start, end) {
             let pictureContainer = document.createElement('div');
             let pictureDiv = document.createElement('div');
             let pictureParagraph = document.createElement('p');
+            const leftArrow = document.createElement('div');
+            const rightArrow = document.createElement('div');
             pictureDiv.classList.add('picture');
+            leftArrow.classList.add('leftArrow');
+            rightArrow.classList.add('rightArrow');
             pictureDiv.style.backgroundImage = `url(${picture.links[0].href})`;
             pictureDiv.id = index;
             pictureParagraph.innerText = `${picture.data[0].title}`;
@@ -89,7 +93,9 @@ function insertPicture(picturesArr, start, end) {
                     while(lightBox.firstChild) {
                         lightBox.removeChild(lightBox.firstChild)
                     }
+                    lightBox.appendChild(leftArrow);
                     lightBox.appendChild(lightBoxPicture);
+                    lightBox.appendChild(rightArrow);
                 }
             })
         }
