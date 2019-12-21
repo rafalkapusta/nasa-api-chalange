@@ -6,7 +6,11 @@ let pictureTitle = document.querySelector('.title');
 let formButton = document.querySelector('#form-search-btn');
 let loadMoreButton = document.querySelector('#form-loadMore-btn');
 let formScrollButton = document.querySelector('#form-loadMore-scroll');
+
 const lightBox = document.querySelector('.lightBox');
+const leftArrow = document.createElement('div');
+const rightArrow = document.createElement('div');
+let lightBoxPicture;
 
 let nasaUrl = new URL('https://images-api.nasa.gov/search');
 let pictureOfTheDayUrl = new URL ('https://api.nasa.gov/planetary/apod');
@@ -46,7 +50,7 @@ Object.keys(params).forEach(key => nasaUrl.searchParams.append(key, params[key])
 fetch(nasaUrl)
     .then(response => response.json())
     .then(json => {
-        //console.log(json);
+        console.log(json);
         loadMoreButton.style.visibility = 'visible';
         formScrollButton.style.visibility = 'visible';
         if(counter === 0) {
@@ -67,17 +71,51 @@ fetch(nasaUrl)
     .catch(error => console.log(error));
 }
 
+function arrowClick(index) {
+    const allPictures = document.querySelectorAll('.picture');
+    leftArrow.classList.add('leftArrow');
+    rightArrow.classList.add('rightArrow');
+    lightBox.classList.add('active');
+    while(lightBox.firstChild) {
+        lightBox.removeChild(lightBox.firstChild)
+    }
+    leftArrow.addEventListener('click', e => {
+        while(lightBox.firstChild) {
+            lightBox.removeChild(lightBox.firstChild)
+        }
+        if(index < 1) {
+            index = allPictures.length-1;
+        } else {
+            index--;
+        }
+        lightBoxPicture = allPictures[index].cloneNode(false);
+        lightBox.appendChild(leftArrow);
+        lightBox.appendChild(lightBoxPicture);
+        lightBox.appendChild(rightArrow);
+    });
+    rightArrow.addEventListener('click', e => {
+        while(lightBox.firstChild) {
+            lightBox.removeChild(lightBox.firstChild)
+        }
+        if(index > allPictures.length-2) {
+            index = 0;
+        } else {
+            index++;
+        }
+        lightBoxPicture = allPictures[index].cloneNode(false);
+        lightBox.appendChild(leftArrow);
+        lightBox.appendChild(lightBoxPicture);
+        lightBox.appendChild(rightArrow);
+    });
+}
+
 function insertPicture(picturesArr, start, end) {
     picturesArr.forEach( (picture, index) => {
         if(index >= start && index <= end) {
             let pictureContainer = document.createElement('div');
             let pictureDiv = document.createElement('div');
             let pictureParagraph = document.createElement('p');
-            const leftArrow = document.createElement('div');
-            const rightArrow = document.createElement('div');
             pictureDiv.classList.add('picture');
-            leftArrow.classList.add('leftArrow');
-            rightArrow.classList.add('rightArrow');
             pictureDiv.style.backgroundImage = `url(${picture.links[0].href})`;
             pictureDiv.id = index;
             pictureParagraph.innerText = `${picture.data[0].title}`;
@@ -88,14 +126,16 @@ function insertPicture(picturesArr, start, end) {
             const allPictures = document.querySelectorAll('.picture');
             pictureContainer.addEventListener('click', e => {
                 if(e.target.className === 'picture' ) {
-                    lightBox.classList.add('active');
-                    const lightBoxPicture = e.target.cloneNode(false);
+                    //console.log(index);
                     while(lightBox.firstChild) {
                         lightBox.removeChild(lightBox.firstChild)
                     }
+                    arrowClick(index);
+                    lightBoxPicture = allPictures[index].cloneNode(false);
                     lightBox.appendChild(leftArrow);
                     lightBox.appendChild(lightBoxPicture);
                     lightBox.appendChild(rightArrow);
+
                 }
             })
         }
