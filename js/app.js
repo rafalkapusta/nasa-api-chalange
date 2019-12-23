@@ -39,7 +39,7 @@ loadPictureOfTheDay();
 function getRandomDate() {
     let year = Math.floor(Math.random()*(2019+1-2000) + 2000).toString();
     let month = Math.floor(Math.random()*(12+1-1) + 1).toString();
-    let day = Math.floor(Math.random()*(31+1-1) + 1).toString();
+    let day = Math.floor(Math.random()*(28+1-1) + 1).toString();
     let date = `${year}-${month}-${day}`;
     return date;
 }
