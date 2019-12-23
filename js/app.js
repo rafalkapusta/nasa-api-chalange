@@ -7,6 +7,8 @@ let formButton = document.querySelector('#form-search-btn');
 let loadMoreButton = document.querySelector('#form-loadMore-btn');
 let formScrollButton = document.querySelector('#form-loadMore-scroll');
 
+let counter;
+
 const lightBox = document.querySelector('.lightBox');
 const leftArrow = document.createElement('div');
 const rightArrow = document.createElement('div');
@@ -50,7 +52,7 @@ Object.keys(params).forEach(key => nasaUrl.searchParams.append(key, params[key])
 fetch(nasaUrl)
     .then(response => response.json())
     .then(json => {
-        console.log(json);
+        //console.log(json);
         loadMoreButton.style.visibility = 'visible';
         formScrollButton.style.visibility = 'visible';
         if(counter === 0) {
@@ -59,13 +61,13 @@ fetch(nasaUrl)
             }
             let start = 0;
             let end = start + 5;
-            insertPicture(filterImges(json.collection.items), start, end);
+            insertPicture(filterImages(json.collection.items), start, end);
         }
         else {
             let pictures = document.querySelectorAll('div .picture');
-            let start = pictures.length;
+            let start = pictures.length-1+1;
             let end = start + 5;
-            insertPicture(filterImges(json.collection.items), start, end);
+            insertPicture(filterImages(json.collection.items), start, end);
         }
     })
     .catch(error => console.log(error));
@@ -76,9 +78,9 @@ function arrowClick(index) {
     leftArrow.classList.add('leftArrow');
     rightArrow.classList.add('rightArrow');
     lightBox.classList.add('active');
-    while(lightBox.firstChild) {
+    /*while(lightBox.firstChild) {
         lightBox.removeChild(lightBox.firstChild)
-    }
+    }*/
     leftArrow.addEventListener('click', e => {
         while(lightBox.firstChild) {
             lightBox.removeChild(lightBox.firstChild)
@@ -92,8 +94,10 @@ function arrowClick(index) {
         lightBox.appendChild(leftArrow);
         lightBox.appendChild(lightBoxPicture);
         lightBox.appendChild(rightArrow);
+        //console.log(index)
     });
     rightArrow.addEventListener('click', e => {
+        //console.log(index)
         while(lightBox.firstChild) {
             lightBox.removeChild(lightBox.firstChild)
         }
@@ -106,6 +110,7 @@ function arrowClick(index) {
         lightBox.appendChild(leftArrow);
         lightBox.appendChild(lightBoxPicture);
         lightBox.appendChild(rightArrow);
+        //console.log(index)
     });
 }
 
@@ -126,7 +131,7 @@ function insertPicture(picturesArr, start, end) {
             const allPictures = document.querySelectorAll('.picture');
             pictureContainer.addEventListener('click', e => {
                 if(e.target.className === 'picture' ) {
-                    //console.log(index);
+                    //console.log(index, e.target.id, allPictures);
                     while(lightBox.firstChild) {
                         lightBox.removeChild(lightBox.firstChild)
                     }
@@ -135,7 +140,6 @@ function insertPicture(picturesArr, start, end) {
                     lightBox.appendChild(leftArrow);
                     lightBox.appendChild(lightBoxPicture);
                     lightBox.appendChild(rightArrow);
-
                 }
             })
         }
@@ -148,26 +152,30 @@ lightBox.addEventListener('click', e => {
     }
 });
 
-function filterImges(array) {
+function filterImages(array) {
     return array.filter(elem => elem.data[0].media_type === 'image')
 }
 
 formButton.addEventListener('click', function(e) {
     e.preventDefault();
     content.style.height = '100%';
-    formButton.setAttribute('disabled', 'true');
-    let search = formInput.value;
-    let counter = 0;
-    loadPictures(search,counter);
-    formButton.removeAttribute('disabled');
-    //formInput.value = '';
+    if(formInput.value) {
+        formButton.setAttribute('disabled', 'true');
+        let search = formInput.value;
+        counter = 0;
+        loadPictures(search,counter);
+        formButton.removeAttribute('disabled');
+        //formInput.value = '';
+    } else {
+        formInput.placeholder = 'search query cannot be empty'
+    }
 });
 
 loadMoreButton.addEventListener('click', function (e) {
    e.preventDefault();
    loadMoreButton.setAttribute('disabled', 'true');
    let search = formInput.value;
-   let counter = 1;
+   counter = 1;
    loadPictures(search, counter);
    loadMoreButton.removeAttribute('disabled');
 });
