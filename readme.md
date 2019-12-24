@@ -22,4 +22,4 @@ In mobile layout only picture title is shown.
 After searching for pictures load more and back to the top buttons are displayed.
 
 
-![nasa Api challange demo](nasaApi.gif)
+![nasa Api challange](NasaApi.gif)
