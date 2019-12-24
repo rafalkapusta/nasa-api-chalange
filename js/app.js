@@ -36,8 +36,6 @@ function loadPictureOfTheDay() {
         .catch(() => loadPictureOfTheDay());
 }
 
-loadPictureOfTheDay();
-
 function getRandomDate() {
     let year = Math.floor(Math.random()*(2019+1-2000) + 2000).toString();
     let month = Math.floor(Math.random()*(12+1-1) + 1).toString();
@@ -46,15 +44,14 @@ function getRandomDate() {
     return date;
 }
 
+loadPictureOfTheDay();
+
 function loadPictures(searchQuery, counter) {
 params = {q: formInput.value};
 Object.keys(params).forEach(key => nasaUrl.searchParams.append(key, params[key]));
 fetch(nasaUrl)
     .then(response => response.json())
     .then(json => {
-        //console.log(json);
-        loadMoreButton.style.visibility = 'visible';
-        formScrollButton.style.visibility = 'visible';
         if(counter === 0) {
             while (content.firstChild) {
                     content.removeChild(content.firstChild);
@@ -62,56 +59,58 @@ fetch(nasaUrl)
             let start = 0;
             let end = start + 5;
             insertPicture(filterImages(json.collection.items), start, end);
+            loadMoreButton.style.visibility = 'visible';
+            formScrollButton.style.visibility = 'visible';
         }
         else {
-            let pictures = document.querySelectorAll('div .picture');
-            let start = pictures.length-1+1;
+            let pictures = document.querySelectorAll('.picture');
+            let start = pictures.length;
             let end = start + 5;
             insertPicture(filterImages(json.collection.items), start, end);
+            loadMoreButton.style.visibility = 'visible';
+            formScrollButton.style.visibility = 'visible';
+        }
+        if(json.collection.items.length === 0) {
+            const notFound = document.createElement('p');
+            notFound.innerText = 'Not found. Try different query.';
+            content.appendChild(notFound);
         }
     })
     .catch(error => console.log(error));
 }
 
 function arrowClick(index) {
-    const allPictures = document.querySelectorAll('.picture');
+    let allPictures = document.querySelectorAll('.picture');
     leftArrow.classList.add('leftArrow');
     rightArrow.classList.add('rightArrow');
     lightBox.classList.add('active');
-    /*while(lightBox.firstChild) {
-        lightBox.removeChild(lightBox.firstChild)
-    }*/
     leftArrow.addEventListener('click', e => {
         while(lightBox.firstChild) {
             lightBox.removeChild(lightBox.firstChild)
         }
+        index--;
         if(index < 1) {
             index = allPictures.length-1;
-        } else {
-            index--;
         }
         lightBoxPicture = allPictures[index].cloneNode(false);
         lightBox.appendChild(leftArrow);
         lightBox.appendChild(lightBoxPicture);
         lightBox.appendChild(rightArrow);
-        //console.log(index)
     });
     rightArrow.addEventListener('click', e => {
-        //console.log(index)
         while(lightBox.firstChild) {
             lightBox.removeChild(lightBox.firstChild)
         }
-        if(index > allPictures.length-2) {
+        index++;
+        if(index > allPictures.length-1) {
             index = 0;
-        } else {
-            index++;
         }
         lightBoxPicture = allPictures[index].cloneNode(false);
         lightBox.appendChild(leftArrow);
         lightBox.appendChild(lightBoxPicture);
         lightBox.appendChild(rightArrow);
-        //console.log(index)
     });
+    return index;
 }
 
 function insertPicture(picturesArr, start, end) {
@@ -128,15 +127,19 @@ function insertPicture(picturesArr, start, end) {
             pictureContainer.appendChild(pictureDiv);
             pictureContainer.appendChild(pictureParagraph);
             content.appendChild(pictureContainer);
-            const allPictures = document.querySelectorAll('.picture');
             pictureContainer.addEventListener('click', e => {
                 if(e.target.className === 'picture' ) {
-                    //console.log(index, e.target.id, allPictures);
                     while(lightBox.firstChild) {
                         lightBox.removeChild(lightBox.firstChild)
                     }
+                    let allPictures = document.querySelectorAll('.picture');
+                    //console.log(allPictures);
+                    lightBox.classList.add('active');
+                    leftArrow.classList.add('leftArrow');
+                    rightArrow.classList.add('rightArrow');
                     arrowClick(index);
                     lightBoxPicture = allPictures[index].cloneNode(false);
+                    //console.log(lightBoxPicture);
                     lightBox.appendChild(leftArrow);
                     lightBox.appendChild(lightBoxPicture);
                     lightBox.appendChild(rightArrow);
@@ -149,6 +152,9 @@ function insertPicture(picturesArr, start, end) {
 lightBox.addEventListener('click', e => {
     if(e.target === e.currentTarget) {
         lightBox.classList.remove('active');
+        while(lightBox.firstChild) {
+            lightBox.removeChild(lightBox.firstChild)
+        }
     }
 });
 
